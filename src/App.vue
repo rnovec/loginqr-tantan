@@ -40,8 +40,9 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-card class="mx-auto">
+      <v-card class="mx-auto" v-if="state === 'login'">
         <v-card-text class="text--primary d-flex justify-center">
+          <!-- 1. Render a QR Code with TanTan Server (Blockchain) -->
           <vue-qrcode
             :color="{ dark: '#F38027' }"
             :value="Math.random(0, 1000).toString()"
@@ -73,6 +74,7 @@
             Scan QR Code
           </v-card-title>
 
+          <!-- 2. Use the phone to decode QR code data -->
           <StreamBarcodeReader
             v-if="dialog"
             @decode="onDecode"
@@ -81,7 +83,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="onClick">
+            <v-btn color="primary" text @click="handleLogin">
               Close
             </v-btn>
           </v-card-actions>
@@ -116,20 +118,19 @@ import { StreamBarcodeReader } from 'vue-barcode-reader'
 import VueQrcode from 'vue-qrcode'
 
 export default {
-  data: () => ({ drawer: null, dialog: false, socket: null, result: '' }),
+  data: () => ({
+    state: 'login',
+    drawer: null,
+    dialog: false,
+    socket: null,
+    result: ''
+  }),
   components: {
     StreamBarcodeReader,
     VueQrcode
   },
-  mounted () {
-    // setInterval(() => {
-    //   this.$socket.emit('everybody', { says: 'Hi, everybody!' })
-    // }, 5000)
-    // this.$socket.on('metrics', io => {
-    //   console.log(io)
-    // })
-  },
   created () {
+    // Connect socket and reconnect every 5 seconds
     this.$socketClient.onOpen = () => {
       console.log('socket connected')
     }
@@ -143,6 +144,7 @@ export default {
         return
       }
       // Handle joining
+      // TODO: wait por message with the user data to success login
       if (data.join) {
         console.log('Joining room ' + data.join)
         // Handle leaving
@@ -163,21 +165,21 @@ export default {
     }
   },
   methods: {
-    onClick () {
+    /**
+     * 3. Handle login in Mobile App
+     */
+    handleLogin () {
       this.dialog = false
+      // TODO: replace for API /login
       this.$socketClient.instance.send(
-        JSON.stringify({
-          command: 'send',
-          room: 2,
-          message: 'Hello there!'
-        })
+        JSON.stringify({ data: {}, command: 'decode_qr' })
       )
     },
     onDecode (val) {
       if (val) {
         this.result = val
         this.dialog = false
-        this.$socket.emit('decoded', { says: 'Hi, everybody!' })
+        this.handleLogin()
       }
     },
     onLoaded () {

@@ -5,13 +5,14 @@ import './registerServiceWorker'
 import VueSimpleWebSocket from 'vue-simple-websocket'
 
 const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws'
-const wsPath = wsScheme + '://' + window.location.hostname + ':8000/chat/stream/'
+const wsPath = wsScheme + '://' + window.location.hostname + ':8000/login/stream/'
 console.log('Connecting to ' + wsPath)
 
 Vue.use(VueSimpleWebSocket, wsPath, {
   reconnectEnabled: true,
   reconnectInterval: 5000 // time to reconnect in milliseconds
 })
+
 Vue.config.productionTip = false
 
 new Vue({
