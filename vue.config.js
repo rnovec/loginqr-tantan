@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: '/loginqr-tantan/',
+  // publicPath: '/loginqr-tantan/',
   pwa: {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
