@@ -4,10 +4,11 @@ import vuetify from './plugins/vuetify'
 import './registerServiceWorker'
 import VueSimpleWebSocket from 'vue-simple-websocket'
 
-const wsPath = process.env.VUE_APP_SOCKET_URL + '/login/stream/'
+const wsPath =
+  process.env.VUE_APP_SOCKET_URL +
+  '/login/stream/?client_id=' +
+  process.env.VUE_APP_CLIENT_ID_TEST
 console.log('Connecting to ' + wsPath)
-
-window.document.cookie = `client_id=${process.env.VUE_APP_CLIENT_ID_TEST};`
 
 Vue.use(VueSimpleWebSocket, wsPath, {
   reconnectEnabled: true,
