@@ -3,17 +3,17 @@
     "short_name": "Vue PWA",
     "icons": [
         {
-            "src": "/vue-pwa-qr/img/icons/android-icon-192x192.png",
+            "src": "./img/icons/android-icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/vue-pwa-qr/img/icons/ms-icon-310x310.png",
+            "src": "./img/icons/ms-icon-310x310.png",
             "sizes": "310x310",
             "type": "image/png"
         }
     ],
-    "start_url": "/vue-pwa-qr/index.html",
+    "start_url": "./index.html",
     "theme_color": "#F38027",
     "background_color": "#800",
     "display": "standalone"

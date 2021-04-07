@@ -109,7 +109,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="handleLogin">
+            <v-btn color="primary" text @click="dialog = false">
               Close
             </v-btn>
           </v-card-actions>
@@ -144,7 +144,7 @@ import { StreamBarcodeReader } from 'vue-barcode-reader'
 import VueQrcode from 'vue-qrcode'
 import axios from 'axios'
 const service = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
+  baseURL: process.env.VUE_APP_API_URL,
   mode: 'cors',
   withCredentials: true
 })
@@ -193,19 +193,17 @@ export default {
     /**
      * 3. Handle login in Mobile App
      */
-    async handleLogin () {
+    async handleLogin (room_id, user_id) {
       this.dialog = false
-      // TODO: replace for API /login
       await service.post('/api/v1/login/qrcode/', {
-        user_id: 1,
-        room_id: this.value
+        user_id,
+        room_id
       })
     },
     onDecode (val) {
       if (val) {
-        this.result = val
         this.dialog = false
-        this.handleLogin()
+        this.handleLogin(val, 1)
       }
     },
     onLoaded () {
