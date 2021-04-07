@@ -40,12 +40,13 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-card class="mx-auto" v-if="state === 'login'">
+      <v-card v-if="state === 'login'" class="mx-auto">
         <v-card-text class="text--primary d-flex justify-center">
-          <!-- 1. Render a QR Code with TanTan Server (Blockchain) -->
+          <!-- 1. Render a QR Code with TanTan Server -->
           <vue-qrcode
+            v-if="value"
             :color="{ dark: '#F38027' }"
-            :value="Math.random(0, 1000).toString()"
+            :value="value"
           />
         </v-card-text>
 
@@ -60,6 +61,31 @@
             <v-icon>mdi-google</v-icon> Continuar con Google
           </v-btn>
         </v-card-text>
+      </v-card>
+      <br />
+      <v-card v-if="state === 'home'" class="mx-auto" max-width="344" outlined>
+        <v-list-item three-line>
+          <v-list-item-content>
+            <div class="overline mb-4">
+              welcome
+            </div>
+            <v-list-item-title class="headline mb-1">
+              {{ user_data.username }}
+            </v-list-item-title>
+            <v-list-item-subtitle
+              >Greyhound divisely hello coldly
+              fonwderfully</v-list-item-subtitle
+            >
+          </v-list-item-content>
+
+          <v-list-item-avatar tile size="80" color="red"></v-list-item-avatar>
+        </v-list-item>
+
+        <v-card-actions>
+          <v-btn outlined rounded color="red" @click="state = 'login'">
+            Logout
+          </v-btn>
+        </v-card-actions>
       </v-card>
 
       <v-dialog v-model="dialog" width="500">
@@ -116,45 +142,44 @@
 <script>
 import { StreamBarcodeReader } from 'vue-barcode-reader'
 import VueQrcode from 'vue-qrcode'
-
+import axios from 'axios'
+const service = axios.create({
+  baseURL: 'http://127.0.0.1:8000',
+  mode: 'cors',
+  withCredentials: true
+})
 export default {
   data: () => ({
     state: 'login',
     drawer: null,
     dialog: false,
-    socket: null,
+    user_data: {},
+    value: null,
     result: ''
   }),
   components: {
     StreamBarcodeReader,
     VueQrcode
   },
-  created () {
+  async created () {
     // Connect socket and reconnect every 5 seconds
     this.$socketClient.onOpen = () => {
       console.log('socket connected')
     }
     this.$socketClient.onMessage = message => {
       // Decode the JSON
-      console.log('Got websocket message ' + message.data)
       const data = JSON.parse(message.data)
-      // Handle errors
-      if (data.error) {
-        alert(data.error)
-        return
-      }
-      // Handle joining
-      // TODO: wait por message with the user data to success login
-      if (data.join) {
-        console.log('Joining room ' + data.join)
-        // Handle leaving
-      } else if (data.leave) {
-        console.log('Leaving room ' + data.leave)
-        // Handle getting a message
-      } else if (data.message || data.msg_type !== 0) {
-        console.log('Leaving room ' + data.message)
-      } else {
-        console.log('Cannot handle message!')
+      console.log(data)
+      switch (data.action) {
+        case 'qrcode':
+          this.value = data.data
+          break
+        case 'authorized':
+          this.state = 'home'
+          this.user_data = data.user_data
+          break
+        default:
+          break
       }
     }
     this.$socketClient.onClose = () => {
@@ -168,12 +193,13 @@ export default {
     /**
      * 3. Handle login in Mobile App
      */
-    handleLogin () {
+    async handleLogin () {
       this.dialog = false
       // TODO: replace for API /login
-      this.$socketClient.instance.send(
-        JSON.stringify({ data: {}, command: 'decode_qr' })
-      )
+      await service.post('/api/v1/login/qrcode/', {
+        user_id: 1,
+        room_id: this.value
+      })
     },
     onDecode (val) {
       if (val) {
