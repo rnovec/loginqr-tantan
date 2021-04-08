@@ -109,7 +109,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="dialog = false">
+            <v-btn color="primary" text @click="onDecode(value)">
               Close
             </v-btn>
           </v-card-actions>
@@ -143,6 +143,7 @@
 import { StreamBarcodeReader } from 'vue-barcode-reader'
 import VueQrcode from 'vue-qrcode'
 import axios from 'axios'
+import jwt_decode from "jwt-decode";
 const service = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   mode: 'cors',
@@ -172,7 +173,8 @@ export default {
       console.log(data)
       switch (data.action) {
         case 'qrcode':
-          this.value = data.data
+          this.value = data.qr_data
+          console.log(this.value)
           break
         case 'authorized':
           this.state = 'home'
@@ -193,17 +195,21 @@ export default {
     /**
      * 3. Handle login in Mobile App
      */
-    async handleLogin (room_id, user_id) {
+    async handleLogin (token, user_id) {
       this.dialog = false
+      var decoded = jwt_decode(token);
+      console.log(decoded);
       await service.post('/api/v1/login/qrcode/', {
         user_id,
-        room_id
+        room_id: decoded.room_id
       })
     },
     onDecode (val) {
       if (val) {
+        const token = val.split('https://loginqr.tantan.solutions/')[1]
+        console.log(token)
         this.dialog = false
-        this.handleLogin(val, 1)
+        this.handleLogin(token, 1)
       }
     },
     onLoaded () {
