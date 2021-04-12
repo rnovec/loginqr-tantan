@@ -109,7 +109,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="onDecode(value)">
+            <v-btn color="primary" text>
               Close
             </v-btn>
           </v-card-actions>
@@ -143,7 +143,6 @@
 import { StreamBarcodeReader } from 'vue-barcode-reader'
 import VueQrcode from 'vue-qrcode'
 import axios from 'axios'
-import jwt_decode from "jwt-decode";
 const service = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   mode: 'cors',
@@ -178,7 +177,7 @@ export default {
           break
         case 'authorized':
           this.state = 'home'
-          this.user_data = data.user_data
+          this.user_data = data.user_info
           break
         default:
           break
@@ -197,11 +196,10 @@ export default {
      */
     async handleLogin (token, user_id) {
       this.dialog = false
-      var decoded = jwt_decode(token);
-      console.log(decoded);
+      console.log(token)
       await service.post('/api/v1/login/qrcode/', {
         user_id,
-        room_id: decoded.room_id
+        token
       })
     },
     onDecode (val) {
