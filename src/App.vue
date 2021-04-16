@@ -44,22 +44,30 @@
         <v-card-text class="text--primary d-flex justify-center">
           <!-- 1. Render a QR Code with TanTan Server -->
           <vue-qrcode
-            v-if="value"
+            v-if="token"
             :color="{ dark: '#F38027' }"
-            :value="value"
+            :value="token"
           />
         </v-card-text>
 
-        <v-card-text class="text--primary d-flex justify-center">
-          <v-btn color="blue" outlined>
-            <v-icon>mdi-facebook</v-icon> Continuar con Facebook
-          </v-btn>
-        </v-card-text>
+        <v-card-text>
+          <v-form ref="form">
+            <v-text-field
+              v-model="socket_url"
+              :counter="10"
+              label="Socket server URL"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="client_id"
+              :counter="10"
+              label="Client ID"
+              required
+            ></v-text-field>
 
-        <v-card-text class="text--primary d-flex justify-center">
-          <v-btn color="red" outlined>
-            <v-icon>mdi-google</v-icon> Continuar con Google
-          </v-btn>
+            <v-text-field v-model="token" label="Token" required></v-text-field>
+            <v-btn @click="recconectWebsocket">Generar QR</v-btn>
+          </v-form>
         </v-card-text>
       </v-card>
       <br />
@@ -140,9 +148,13 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { StreamBarcodeReader } from 'vue-barcode-reader'
 import VueQrcode from 'vue-qrcode'
 import axios from 'axios'
+import VueSimpleWebSocket from 'vue-simple-websocket'
+const client_id = process.env.VUE_APP_CLIENT_ID_TEST
+const socket_url = process.env.VUE_APP_SOCKET_URL
 const service = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   mode: 'cors',
@@ -150,6 +162,9 @@ const service = axios.create({
 })
 export default {
   data: () => ({
+    client_id,
+    socket_url,
+    token: '',
     state: 'login',
     drawer: null,
     dialog: false,
@@ -161,44 +176,53 @@ export default {
     StreamBarcodeReader,
     VueQrcode
   },
-  async created () {
-    // Connect socket and reconnect every 5 seconds
-    this.$socketClient.onOpen = () => {
-      console.log('socket connected')
-    }
-    this.$socketClient.onMessage = message => {
-      // Decode the JSON
-      const data = JSON.parse(message.data)
-      console.log(data)
-      switch (data.action) {
-        case 'qrcode':
-          this.value = data.qr_data
-          console.log(this.value)
-          break
-        case 'authorized':
-          this.state = 'home'
-          this.user_data = data.user_info
-          break
-        default:
-          break
-      }
-    }
-    this.$socketClient.onClose = () => {
-      console.log('socket closed')
-    }
-    this.$socketClient.onError = () => {
-      console.log('socket error')
-    }
-  },
+  async created () {},
   methods: {
+    recconectWebsocket () {
+      const wsPath =
+        this.socket_url + '/login/stream/?client_id=' + this.client_id
+      console.log('Connecting to ' + wsPath)
+
+      Vue.use(VueSimpleWebSocket, wsPath, {
+        reconnectEnabled: false,
+        reconnectInterval: 1000 // time to reconnect in milliseconds
+      })
+
+      // Connect socket and reconnect every 5 seconds
+      this.$socketClient.onOpen = () => {
+        console.log('socket connected')
+      }
+      this.$socketClient.onMessage = message => {
+        // Decode the JSON
+        const data = JSON.parse(message.data)
+        console.log(data)
+        switch (data.action) {
+          case 'qrcode':
+            this.token = data.qr_data
+            break
+          case 'authorized':
+            this.state = 'home'
+            this.user_data = data.user_info
+            break
+          default:
+            break
+        }
+      }
+      this.$socketClient.onClose = () => {
+        console.log('socket closed')
+      }
+      this.$socketClient.onError = () => {
+        console.log('socket error')
+      }
+    },
     /**
      * 3. Handle login in Mobile App
      */
-    async handleLogin (token, user_id) {
+    async handleLogin (token, user_data) {
       this.dialog = false
       console.log(token)
       await service.post('/api/v1/login/qrcode/', {
-        user_id,
+        user_data,
         token
       })
     },
@@ -207,7 +231,7 @@ export default {
         const token = val.split('https://loginqr.tantan.solutions/')[1]
         console.log(token)
         this.dialog = false
-        this.handleLogin(token, 1)
+        this.handleLogin(token, { biometrics: [] })
       }
     },
     onLoaded () {
