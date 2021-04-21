@@ -8,12 +8,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/loginqr-tantan/favicon.png"
   },
   {
-    "revision": "b33fe8e384acb52df2836bfaa41528c4",
+    "revision": "cad42a037dae9e73bbd020c7cc104f89",
     "url": "/loginqr-tantan/index.html"
   },
   {
-    "revision": "f4a2040ec3735d525d36",
-    "url": "/loginqr-tantan/js/app.56563788.js"
+    "revision": "62cab84825c6874383a6",
+    "url": "/loginqr-tantan/js/app.dbd575b3.js"
   },
   {
     "revision": "4186e350200711e8d947",
