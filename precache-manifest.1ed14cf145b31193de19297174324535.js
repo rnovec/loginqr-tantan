@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "8a84479228ca46d3f0f5",
-    "url": "/loginqr-tantan/css/chunk-vendors.564f03f9.css"
+    "revision": "4186e350200711e8d947",
+    "url": "/loginqr-tantan/css/chunk-vendors.ba1fb67c.css"
   },
   {
     "revision": "d8e9f5aebcf2789239cbc08618f874f0",
     "url": "/loginqr-tantan/favicon.png"
   },
   {
-    "revision": "5fa3e80269a5fe287c5b3d25eae15a23",
+    "revision": "d41a03776f58304997f60ad25406414d",
     "url": "/loginqr-tantan/index.html"
   },
   {
-    "revision": "1e2c5dde86dcf0d58f3b",
-    "url": "/loginqr-tantan/js/app.f4190125.js"
+    "revision": "69471bed69d1ae21a1c1",
+    "url": "/loginqr-tantan/js/app.4794820d.js"
   },
   {
-    "revision": "8a84479228ca46d3f0f5",
-    "url": "/loginqr-tantan/js/chunk-vendors.b5398644.js"
+    "revision": "4186e350200711e8d947",
+    "url": "/loginqr-tantan/js/chunk-vendors.1500ac87.js"
   },
   {
     "revision": "d718c2d902e44ec1b2d35b4a2d93ab19",
