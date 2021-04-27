@@ -71,22 +71,52 @@
         </v-card-text>
       </v-card>
       <br />
-      <v-card v-if="state === 'home'" class="mx-auto" max-width="344" outlined>
-        <v-list-item three-line>
+      <v-card v-if="state === 'home'" class="mx-auto" max-width="500" outlined>
+        <v-list-item three-line v-if="user_data.scope_result">
           <v-list-item-content>
             <div class="overline mb-4">
               welcome
             </div>
-            <v-list-item-title class="headline mb-1">
-              {{ user_data.username }}
+            <v-list-item-title class="title">
+              {{ user_data.scope_result.personal_data.first_name }}
+              {{ user_data.scope_result.personal_data.last_name }}
             </v-list-item-title>
-            <v-list-item-subtitle
-              >Greyhound divisely hello coldly
-              fonwderfully</v-list-item-subtitle
-            >
+            <v-list-item-subtitle>{{
+              user_data.scope_result.personal_data.email
+            }}</v-list-item-subtitle>
+
+            <v-list>
+              <v-list-group
+                v-for="(key, value) of user_data.scope_result"
+                :key="key"
+                no-action
+              >
+                <template v-slot:activator>
+                  <v-list-item-content>
+                    <v-list-item-title v-text="value"></v-list-item-title>
+                  </v-list-item-content>
+                </template>
+
+                <v-list-item v-for="(k, v) of key" :key="k">
+                  <v-list-item-content>
+                    <v-list-item-title
+                      ><b>{{ k }}</b> ({{ v }})</v-list-item-title
+                    >
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-group>
+            </v-list>
           </v-list-item-content>
 
-          <v-list-item-avatar tile size="80" color="red"></v-list-item-avatar>
+          <v-list-item-avatar size="80" v-if="user_data.scope_result.biometrics"
+            ><v-img :src="user_data.scope_result.biometrics.image"></v-img
+          ></v-list-item-avatar>
+          <v-list-item-avatar
+            v-else
+            size="80"
+            rounded
+            color="red"
+          ></v-list-item-avatar>
         </v-list-item>
 
         <v-card-actions>
