@@ -1,6 +1,7 @@
-# vue-pwa-qr
+# Login QR TanTan Demo
 
-    $ vue add pwa
+![](./FlowLoginQR.png)
+
 
 ## Project setup
 
