@@ -1,4 +1,4 @@
-importScripts("/loginqr-tantan/precache-manifest.4149f21b61d9d9f52ab8dc8602a7e7a2.js", "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
+importScripts("/loginqr-tantan/precache-manifest.1ebf1fc290ee896473bbfcae27f78fca.js", "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 workbox.setConfig({
   debug: false
