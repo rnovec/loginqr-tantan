@@ -213,10 +213,14 @@ export default {
         this.socket_url + '/login/stream/?client_id=' + this.client_id
       console.log('Connecting to ' + wsPath)
 
-      Vue.use(VueSimpleWebSocket, wsPath, {
-        reconnectEnabled: false,
-        reconnectInterval: 1000 // time to reconnect in milliseconds
-      })
+      try {
+        Vue.use(VueSimpleWebSocket, wsPath, {
+          reconnectEnabled: false,
+          reconnectInterval: 1000 // time to reconnect in milliseconds
+        })
+      } catch (error) {
+        alert(error)
+      }
 
       // Connect socket and reconnect every 5 seconds
       this.$socketClient.onOpen = () => {
@@ -238,11 +242,13 @@ export default {
             break
         }
       }
-      this.$socketClient.onClose = () => {
-        console.log('socket closed')
+      this.$socketClient.onClose = error => {
+        alert(error)
+        console.log('socket closed', error)
       }
-      this.$socketClient.onError = () => {
-        console.log('socket error')
+      this.$socketClient.onError = error => {
+        alert(error)
+        console.log('socket error', error)
       }
     },
     /**
